@@ -6,8 +6,8 @@
 	<artifactId>matsim-example-project</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
-	<name>MATSim example project</name>
-	<description>MATSim example project</description>
+	<name>Konrad's fancy thesis</name>
+	<description></description>
 
 	<properties>
 		<!-- release -->
@@ -52,6 +52,10 @@
 			<id>slimjars</id>
 			<url>https://mvn.slimjars.com</url>
 		</repository>
+			<repository>
+				<id>jitpack.io</id>
+				<url>https://jitpack.io</url>
+			</repository>
 	</repositories>
 
 	<dependencies>
@@ -92,47 +96,18 @@
 		</dependency>
 
 		<!--some contribs:-->
-		<dependency>
-			<groupId>org.matsim.contrib</groupId>
-			<artifactId>minibus</artifactId>
-			<version>${matsim.version}</version>
-		</dependency>
+
 		<dependency>
 			<groupId>org.matsim.contrib</groupId>
 			<artifactId>otfvis</artifactId>
 			<version>${matsim.version}</version>
 		</dependency>
+
 		<dependency>
-			<groupId>org.matsim.contrib</groupId>
-			<artifactId>noise</artifactId>
-			<version>${matsim.version}</version>
+			<groupId>com.github.matsim-org</groupId>
+			<artifactId>matsim-code-examples</artifactId>
+			<version>13.x-c67c1cdf67-1</version>
 		</dependency>
-		<dependency>
-			<groupId>org.matsim.contrib</groupId>
-			<artifactId>roadpricing</artifactId>
-			<version>${matsim.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.matsim.contrib</groupId>
-			<artifactId>taxi</artifactId>
-			<version>${matsim.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.matsim.contrib</groupId>
-			<artifactId>av</artifactId>
-			<version>${matsim.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.matsim.contrib</groupId>
-			<artifactId>freight</artifactId>
-			<version>${matsim.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.matsim.contrib</groupId>
-			<artifactId>bicycle</artifactId>
-			<version>${matsim.version}</version>
-		</dependency>
-		<!--Dependencies from where stated above to here are added as a service; they can be removed if you don't need them-->
 
 	</dependencies>
 
