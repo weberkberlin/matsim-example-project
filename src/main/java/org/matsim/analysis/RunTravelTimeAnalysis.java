@@ -16,12 +16,14 @@ import org.matsim.core.router.TripRouterModule;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.core.utils.collections.Tuple;
 
+import java.nio.file.FileSystem;
+import java.nio.file.Paths;
 import java.util.List;
 
 public class RunTravelTimeAnalysis {
 
 
-    private static final String CONFIG_PATH = "";
+    private static final String CONFIG_PATH = "scenarios/equil/config.xml";
     private static final String NETWORK_CHANGE_EVENTS = "";
 
     private static final String OUTPUT_EVENTS_PATH = "";
@@ -45,6 +47,9 @@ public class RunTravelTimeAnalysis {
         config.network().setChangeEventsInputFile(NETWORK_CHANGE_EVENTS);
         config.controler().setOutputDirectory(OUTPUT_DIRECTORY);
 
+        //set dummy population, will be overridden anyways so we do not load the original scenario population which would a) take long and b) possibly does not fit into Konrad's RAM (?)
+        String pathToDummyPlansFile = Paths.get("scenarios/equil/plans100.xml").toAbsolutePath().toString();
+        config.plans().setInputFile(pathToDummyPlansFile);
 
         //register new activity type
         PlanCalcScoreConfigGroup.ActivityParams params = new PlanCalcScoreConfigGroup.ActivityParams();
