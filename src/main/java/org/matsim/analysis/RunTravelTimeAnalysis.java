@@ -1,24 +1,38 @@
 package org.matsim.analysis;
 
+import org.apache.commons.math3.random.RandomGenerator;
+import org.geotools.data.shapefile.files.ShpFiles;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.*;
+import org.matsim.contrib.util.random.RandomUtils;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
 import org.matsim.core.controler.Controler;
+import org.matsim.core.gbl.MatsimRandom;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.router.RoutingModule;
 import org.matsim.core.router.TripRouterModule;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.core.utils.collections.Tuple;
+import org.matsim.core.utils.geometry.CoordUtils;
+import org.matsim.core.utils.geometry.GeometryUtils;
+import org.matsim.core.utils.gis.ShapeFileReader;
+import org.matsim.core.utils.io.IOUtils;
+import org.matsim.utils.gis.shp2matsim.ShpGeometryUtils;
+import org.opengis.feature.simple.SimpleFeature;
 
 import java.nio.file.FileSystem;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.List;
+import java.util.Random;
 
 public class RunTravelTimeAnalysis {
 
@@ -117,9 +131,27 @@ public class RunTravelTimeAnalysis {
 
     //TODO
     private static Tuple<Coord,Coord> getRandomCoordRelationInNetwork(Network network) {
-//        NetworkUtils.getBoundingBox()
-        //...
-        return null;
+
+        //double[] bbox = NetworkUtils.getBoundingBox(network.getNodes().values());
+        //List<Geometry> shape = ShpGeometryUtils.loadGeometries(IOUtils.resolveFileOrResource("123"));
+        //ShpGeometryUtils.isCoordInGeometries();
+
+        //RandomGenerator randGen = RandomUtils.getLocalGenerator();
+        Random random = MatsimRandom.getLocalInstance();
+
+        Collection<SimpleFeature> listOfFeatures = ShapeFileReader.getAllFeatures(IOUtils.resolveFileOrResource("123"));
+        if (listOfFeatures.size() > 1){
+            throw new IllegalArgumentException("too many features in shapefile! Only 1 allowed.");
+        }
+
+
+        Point start = GeometryUtils.getRandomPointInFeature(random, listOfFeatures.stream().findAny().orElseThrow());
+        Point end = GeometryUtils.getRandomPointInFeature(random, listOfFeatures.stream().findAny().orElseThrow());
+
+        Coord startCoord = null;
+        Coord endCoord = null;
+
+        return new Tuple<>(startCoord, endCoord);
     }
 
 
