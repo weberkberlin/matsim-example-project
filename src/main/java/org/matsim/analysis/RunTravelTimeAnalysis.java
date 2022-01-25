@@ -39,11 +39,12 @@ public class RunTravelTimeAnalysis {
 
     private static final String CONFIG_PATH = "scenarios/equil/config.xml";
     private static final String NETWORK_CHANGE_EVENTS = "";
+    private static final String SHAPEFILE_PATH  = "C:/Users/konra/tubCloud/Uni/Bachelorarbeit/Hamburg/hamburg_hvv/hamburg_hvv_one_geom.shp";
 
     private static final String OUTPUT_EVENTS_PATH = "";
 
     private static final String OUTPUT_DIRECTORY = "";
-    private static final Integer NUMBER_OF_AGENTS = 10_000;
+    private static final Integer NUMBER_OF_AGENTS = 10;
 
 
     private static final String ACT_TYPE = "analysis";
@@ -54,7 +55,7 @@ public class RunTravelTimeAnalysis {
 
         //create network change events
         String outputEvents = config.controler().getOutputDirectory() + "/" +  config.controler().getRunId() + ".output_events.xml.gz";
-        new CreateNetworkChangeEvents(config.network().getInputFile(), outputEvents, NETWORK_CHANGE_EVENTS).run();
+        //new CreateNetworkChangeEvents(config.network().getInputFile(), outputEvents, NETWORK_CHANGE_EVENTS).run();
 
         //set input paths and output dir
         config.network().setTimeVariantNetwork(true);
@@ -95,6 +96,12 @@ public class RunTravelTimeAnalysis {
 
         PopulationFactory factory = scenario.getPopulation().getFactory();
 
+        Collection<SimpleFeature> listOfFeatures = ShapeFileReader.getAllFeatures(IOUtils.resolveFileOrResource(SHAPEFILE_PATH));
+        if (listOfFeatures.size() > 1){
+            throw new IllegalArgumentException("too many features in shapefile! Only 1 allowed.");
+        }
+        SimpleFeature shapefile = listOfFeatures.stream().findAny().orElseThrow();
+
 
         for (int i = 1; i < NUMBER_OF_AGENTS; i++) {
 
@@ -104,7 +111,7 @@ public class RunTravelTimeAnalysis {
             Plan carPlan = factory.createPlan();
             Plan ptPlan = factory.createPlan();
 
-            Tuple<Coord, Coord> relation = getRandomCoordRelationInNetwork(scenario.getNetwork());
+            Tuple<Coord, Coord> relation = getRandomCoordRelationInNetwork(shapefile);
 
             Activity originAct = factory.createActivityFromCoord(ACT_TYPE, relation.getFirst());
             originAct.setEndTime( 8*3600 ); //TODO
@@ -130,7 +137,7 @@ public class RunTravelTimeAnalysis {
     }
 
     //TODO
-    private static Tuple<Coord,Coord> getRandomCoordRelationInNetwork(Network network) {
+    private static Tuple<Coord,Coord> getRandomCoordRelationInNetwork(SimpleFeature shapefile) {
 
         //double[] bbox = NetworkUtils.getBoundingBox(network.getNodes().values());
         //List<Geometry> shape = ShpGeometryUtils.loadGeometries(IOUtils.resolveFileOrResource("123"));
@@ -139,14 +146,16 @@ public class RunTravelTimeAnalysis {
         //RandomGenerator randGen = RandomUtils.getLocalGenerator();
         Random random = MatsimRandom.getLocalInstance();
 
-        Collection<SimpleFeature> listOfFeatures = ShapeFileReader.getAllFeatures(IOUtils.resolveFileOrResource("123"));
-        if (listOfFeatures.size() > 1){
-            throw new IllegalArgumentException("too many features in shapefile! Only 1 allowed.");
-        }
+        //Collection<SimpleFeature> listOfFeatures = ShapeFileReader.getAllFeatures(IOUtils.resolveFileOrResource("C:/Users/konra/tubCloud/Uni/Bachelorarbeit/Hamburg/hamburg_hvv/hamburg_hvv_one_geom.shp"));
+        //if (listOfFeatures.size() > 1){
+        //    throw new IllegalArgumentException("too many features in shapefile! Only 1 allowed.");
+        //}
+
+        System.out.println(shapefile.toString());
 
 
-        Point start = GeometryUtils.getRandomPointInFeature(random, listOfFeatures.stream().findAny().orElseThrow());
-        Point end = GeometryUtils.getRandomPointInFeature(random, listOfFeatures.stream().findAny().orElseThrow());
+        //Point start = GeometryUtils.getRandomPointInFeature(random, listOfFeatures.stream().findAny().orElseThrow());
+        //Point end = GeometryUtils.getRandomPointInFeature(random, listOfFeatures.stream().findAny().orElseThrow());
 
         Coord startCoord = null;
         Coord endCoord = null;

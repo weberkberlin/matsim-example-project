@@ -49,8 +49,8 @@ public class CreateNetworkChangeEvents{
 	private static final int TIMESTEP = 15 * 60;
 
 	//input files
-	private static final String NETWORKFILE = "";
-	private static final String SIMULATION_EVENTS_FILE = "";
+	private static final String NETWORKFILE = "C:/Users/konra/tubCloud/Uni/Bachelorarbeit/Hamburg/hamburg-v2.2-10pct-base.output_network.xml";
+	private static final String SIMULATION_EVENTS_FILE = "C:/Users/konra/tubCloud/Uni/Bachelorarbeit/Hamburg/hamburg-v2.2-10pct-base.output_events.xml";
 	static final String OUTPUT_CHANGE_EVENTS_FILE = "";
 	private static final double MINIMUMFREESPEED = 3;
 
