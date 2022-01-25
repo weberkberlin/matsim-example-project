@@ -27,6 +27,7 @@ import org.matsim.core.utils.gis.ShapeFileReader;
 import org.matsim.core.utils.io.IOUtils;
 import org.matsim.utils.gis.shp2matsim.ShpGeometryUtils;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.geometry.BoundingBox;
 
 import java.nio.file.FileSystem;
 import java.nio.file.Paths;
@@ -37,13 +38,13 @@ import java.util.Random;
 public class RunTravelTimeAnalysis {
 
 
-    private static final String CONFIG_PATH = "scenarios/equil/config.xml";
-    private static final String NETWORK_CHANGE_EVENTS = "";
+    private static final String CONFIG_PATH = "C:/Users/konra/tubCloud/Uni/Bachelorarbeit/Hamburg/hamburg-v2.2-10pct-base.output_config.xml";
+    private static final String NETWORK_CHANGE_EVENTS = "C:/Users/konra/tubCloud/Uni/Bachelorarbeit/Hamburg/hamburg-v2.2-10pct-base.output_networkChangeEvents.xml.gz";
     private static final String SHAPEFILE_PATH  = "C:/Users/konra/tubCloud/Uni/Bachelorarbeit/Hamburg/hamburg_hvv/hamburg_hvv_one_geom.shp";
 
     private static final String OUTPUT_EVENTS_PATH = "";
 
-    private static final String OUTPUT_DIRECTORY = "";
+    private static final String OUTPUT_DIRECTORY = "C:/Users/konra/tubCloud/Uni/Bachelorarbeit/Stand_220125";
     private static final Integer NUMBER_OF_AGENTS = 10;
 
 
@@ -54,7 +55,8 @@ public class RunTravelTimeAnalysis {
         Config config = ConfigUtils.loadConfig(CONFIG_PATH);
 
         //create network change events
-        String outputEvents = config.controler().getOutputDirectory() + "/" +  config.controler().getRunId() + ".output_events.xml.gz";
+        //String outputEvents = config.controler().getOutputDirectory() + "/" +  config.controler().getRunId() + ".output_events.xml.gz";
+        String outputEvents = "C:/Users/konra/tubCloud/Uni/Hamburg/hamburg-v2.2-10pct-base.output_events.xml.gz";
         //new CreateNetworkChangeEvents(config.network().getInputFile(), outputEvents, NETWORK_CHANGE_EVENTS).run();
 
         //set input paths and output dir
@@ -80,14 +82,14 @@ public class RunTravelTimeAnalysis {
 
         Controler controler = new Controler(scenario);
 
-        RoutingModule router = controler.getInjector().getInstance(RoutingModule.class);
+        //RoutingModule router = controler.getInjector().getInstance(RoutingModule.class);
 
         controler.run();
     }
 
     /**
      * first deletes all agents from the population and then (randomly)
-     * generates new agents that have one leg each with variyng distances and relations spread over the entire network
+     * generates new agents that have one leg each with varying distances and relations spread over the entire network
      * @param scenario
      */
     private static void overridePopulation(Scenario scenario){
@@ -103,7 +105,7 @@ public class RunTravelTimeAnalysis {
         SimpleFeature shapefile = listOfFeatures.stream().findAny().orElseThrow();
 
 
-        for (int i = 1; i < NUMBER_OF_AGENTS; i++) {
+        for (int i = 1; i <= NUMBER_OF_AGENTS; i++) {
 
             Person carPerson = factory.createPerson(Id.createPersonId("person_" + i + "_CAR"));
             Person ptPerson = factory.createPerson(Id.createPersonId("person_" + i + "_PT"));
@@ -136,7 +138,6 @@ public class RunTravelTimeAnalysis {
 
     }
 
-    //TODO
     private static Tuple<Coord,Coord> getRandomCoordRelationInNetwork(SimpleFeature shapefile) {
 
         //double[] bbox = NetworkUtils.getBoundingBox(network.getNodes().values());
@@ -146,20 +147,43 @@ public class RunTravelTimeAnalysis {
         //RandomGenerator randGen = RandomUtils.getLocalGenerator();
         Random random = MatsimRandom.getLocalInstance();
 
+        //TODO: the commented out section is supposed to be the better solution, getRandomPointInFeature doesnt seem to work with the CRS however
         //Collection<SimpleFeature> listOfFeatures = ShapeFileReader.getAllFeatures(IOUtils.resolveFileOrResource("C:/Users/konra/tubCloud/Uni/Bachelorarbeit/Hamburg/hamburg_hvv/hamburg_hvv_one_geom.shp"));
         //if (listOfFeatures.size() > 1){
         //    throw new IllegalArgumentException("too many features in shapefile! Only 1 allowed.");
         //}
 
-        System.out.println(shapefile.toString());
-
-
         //Point start = GeometryUtils.getRandomPointInFeature(random, listOfFeatures.stream().findAny().orElseThrow());
         //Point end = GeometryUtils.getRandomPointInFeature(random, listOfFeatures.stream().findAny().orElseThrow());
 
-        Coord startCoord = null;
+        BoundingBox bbox = shapefile.getBounds();
+        System.out.println(bbox.toString());
+
+               Coord startCoord = null;
         Coord endCoord = null;
 
+        //TODO: does not yet check if Coord is in shape, only if Coord is in bbox
+
+        boolean isInShape = false;
+        while (!isInShape) {
+            double xStart = (bbox.getMaxX() - bbox.getMinX()) * random.doubles().findAny().getAsDouble() + bbox.getMinX();
+            double yStart = (bbox.getMaxY() - bbox.getMinY()) * random.doubles().findAny().getAsDouble() + bbox.getMinY();
+            startCoord = CoordUtils.createCoord(xStart, yStart);
+            System.out.println(startCoord);
+            isInShape = true;
+            //ShpGeometryUtils.isCoordInGeometries()
+        }
+
+        isInShape = false;
+        while (!isInShape) {
+            double xEnd = (bbox.getMaxX() - bbox.getMinX()) * random.doubles().findAny().getAsDouble() + bbox.getMinX();
+            double yEnd = (bbox.getMaxY() - bbox.getMinY()) * random.doubles().findAny().getAsDouble() + bbox.getMinY();
+            endCoord = CoordUtils.createCoord(xEnd, yEnd);
+            System.out.println(endCoord);
+            isInShape = true;
+            //ShpGeometryUtils.isCoordInGeometries()
+
+        }
         return new Tuple<>(startCoord, endCoord);
     }
 
