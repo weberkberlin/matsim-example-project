@@ -11,7 +11,7 @@
 
 	<properties>
 		<!-- release -->
-		<matsim.version>13.0</matsim.version>
+		<matsim.version>14.0-PR1723</matsim.version>
 
 		<!-- weekly release -->
 <!--		<matsim.version>14.0-2021w43</matsim.version>-->
